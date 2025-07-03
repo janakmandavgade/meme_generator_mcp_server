@@ -1,0 +1,1 @@
+# This repo contains all mcp tools and prompts and resources required for the llm to fetch reddit memes, create memes, add in audio, etc (FastMCP)
