@@ -173,4 +173,8 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+# Custom
+/data/generated_video/*
+
+
 # End of https://www.toptal.com/developers/git
