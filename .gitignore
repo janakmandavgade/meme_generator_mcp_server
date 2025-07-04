@@ -175,6 +175,8 @@ pyrightconfig.json
 
 # Custom
 /data/generated_video/*
+client_secret_old.json
+client_secret.json
 
 
 # End of https://www.toptal.com/developers/git
