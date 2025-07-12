@@ -18,6 +18,8 @@ from pathlib import Path
 from youtube_video_upload.upload_video import my_custom_uploader
 import base64
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response, JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 
 load_dotenv()
 # import gradio as gr
@@ -52,7 +54,7 @@ mcp = FastMCP("Demo 🚀",middleware=[
 @mcp.custom_route("/health", methods=["GET"])
 async def health(request):
     print("Healthy MCP server!")
-    return {"status": "healthy", "service": "meme_pipeline"}
+    return JSONResponse({"status": "healthy", "service": "meme_pipeline"})
 
 @mcp.tool
 def add(a: int, b: int) -> dict:
