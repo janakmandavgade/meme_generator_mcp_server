@@ -3,6 +3,7 @@ requests
 moviepy
 httplib2
 fastmcp
+fastapi
 python-dotenv
 # google-api-python-client
 # google-auth-httplib2
