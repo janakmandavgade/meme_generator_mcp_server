@@ -20,7 +20,7 @@ import base64
 from starlette.responses import Response, JSONResponse
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
-from fastmcp.server.middleware import Middleware
+# from fastmcp.server.middleware import Middleware
 
 load_dotenv()
 # import gradio as gr
