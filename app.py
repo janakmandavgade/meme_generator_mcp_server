@@ -17,9 +17,9 @@ from dotenv import load_dotenv
 from pathlib import Path
 from youtube_video_upload.upload_video import my_custom_uploader
 import base64
-from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response, JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 load_dotenv()
 # import gradio as gr
@@ -33,15 +33,17 @@ os.makedirs(BASE_DIR, exist_ok=True)
 OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", "out.mp4")
 random_meme_path = os.path.join(BASE_DIR,"data","downloaded_memes")
 
-mcp = FastMCP("Demo 🚀",middleware=[
+middleware = [
+    Middleware(
         CORSMiddleware,
-        {
-            "allow_origins": ["*"],
-            "allow_credentials": True,
-            "allow_methods": ["*"],
-            "allow_headers": ["*"],
-        }
-    ])
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+    )
+]
+
+mcp = FastMCP("Demo 🚀",middleware=middleware)
 
 # mcp.app.add_middleware(
 #     CORSMiddleware,
