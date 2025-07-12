@@ -293,7 +293,7 @@ def createVideo(meme_image_name=None, audio_type=None, out_name="out.mp4", durat
         print("Line 214")
         # Overlay and save
         final = CompositeVideoClip([bg,clip])
-        final.write_videofile(OUT_PATH, fps=24, codec="libx264", threads=THREADS, logger=None, progress_bar=False,preset="ultrafast" )
+        final.write_videofile(OUT_PATH, fps=24, codec="libx264", threads=THREADS, logger=None,preset="ultrafast" )
 
         print("Line 219")
         print(f"Video created successfully: {OUT_PATH}")
