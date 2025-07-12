@@ -20,6 +20,7 @@ import base64
 from starlette.responses import Response, JSONResponse
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
+import shutil
 # from fastmcp.server.middleware import Middleware
 
 load_dotenv()
@@ -55,6 +56,33 @@ mcp = FastMCP("Demo 🚀")
 # )
 
 mcp.http_app(middleware=starlette_middleware)
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health(request):
+    print("Healthy MCP server!")
+    return JSONResponse({"status": "healthy", "service": "meme_pipeline"})
+
+@mcp.custom_route("/clear", methods=["GET"])
+async def clear_tmp(request):
+    try:
+        print("Cleaning Old Data")
+
+        if os.path.exists(random_meme_path) and os.path.isdir(random_meme_path):
+            shutil.rmtree(random_meme_path)
+            print(f"Deleted directory {random_meme_path}")
+        else:
+            print(f"Directory does not exist: {random_meme_path}")
+        out_vdo_path = os.path.join(BASE_DIR, "data", "generated_video")
+        if os.path.exists(out_vdo_path) and os.path.isdir(out_vdo_path):
+            shutil.rmtree(out_vdo_path)
+            print(f"Deleted directory {out_vdo_path}")
+        else:
+            print(f"Directory does not exist: {out_vdo_path}")
+
+        return JSONResponse({"status": "successfully deleted", "service": "meme_pipeline"})
+    except Exception as e:
+        print("Exception in clear_tmp", e)
+        return JSONResponse({"status": "successfully deleted", "service": "meme_pipeline", "error": e})
 
 @mcp.custom_route("/health", methods=["GET"])
 async def health(request):
