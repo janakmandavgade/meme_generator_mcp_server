@@ -1,4 +1,4 @@
-from fastmcp. import FastMCP,
+from fastmcp import FastMCP
 import requests
 import os
 import json
@@ -40,6 +40,11 @@ mcp.app.add_middleware(
     allow_methods=["*"],                       # GET, POST, etc.
     allow_headers=["*"],                       # Content-Type, Authorization, ...
 )
+
+@mcp.get("/health")
+async def health():
+    print("Healthy MCP server!")
+    return {"status": "healthy", "service": "meme_pipeline"}
 
 @mcp.tool
 def add(a: int, b: int) -> dict:
