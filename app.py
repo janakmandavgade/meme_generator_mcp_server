@@ -50,7 +50,7 @@ mcp = FastMCP("Demo 🚀",middleware=[
 # )
 
 @mcp.custom_route("/health", methods=["GET"])
-async def health():
+async def health(request):
     print("Healthy MCP server!")
     return {"status": "healthy", "service": "meme_pipeline"}
 
