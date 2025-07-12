@@ -1,4 +1,4 @@
-from fastmcp import FastMCP
+from fastmcp. import FastMCP,
 import requests
 import os
 import json
@@ -32,8 +32,8 @@ OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", "out.mp4")
 random_meme_path = os.path.join(BASE_DIR,"data","downloaded_memes")
 
 mcp = FastMCP("Demo 🚀")
-
-mcp.add_middleware(
+mcp.add_middleware()
+mcp.app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],   # your frontend origin
     allow_credentials=True,
