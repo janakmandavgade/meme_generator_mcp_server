@@ -26,6 +26,8 @@ import shutil
 load_dotenv()
 # import gradio as gr
 
+THREADS= os.environ.get("THREADS")
+
 os.environ.setdefault("DANGEROUSLY_OMIT_AUTH", "true")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
@@ -291,7 +293,7 @@ def createVideo(meme_image_name=None, audio_type=None, out_name="out.mp4", durat
         print("Line 214")
         # Overlay and save
         final = CompositeVideoClip([bg,clip])
-        final.write_videofile(OUT_PATH, fps=24, codec="libx264", threads=6 )
+        final.write_videofile(OUT_PATH, fps=24, codec="libx264", threads=THREADS, logger=None, progress_bar=False,preset="ultrafast" )
 
         print("Line 219")
         print(f"Video created successfully: {OUT_PATH}")
