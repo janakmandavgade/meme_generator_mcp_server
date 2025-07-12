@@ -20,6 +20,7 @@ import base64
 from starlette.responses import Response, JSONResponse
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
+from fastmcp.server.middleware import Middleware
 
 load_dotenv()
 # import gradio as gr
@@ -33,17 +34,17 @@ os.makedirs(BASE_DIR, exist_ok=True)
 OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", "out.mp4")
 random_meme_path = os.path.join(BASE_DIR,"data","downloaded_memes")
 
-middleware = [
+starlette_middleware = [
     Middleware(
         CORSMiddleware,
         allow_origins=["*"],
-        allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=["*"]
+        allow_headers=["*"],
+        allow_credentials=True,
     )
 ]
 
-mcp = FastMCP("Demo 🚀",middleware=middleware)
+mcp = FastMCP("Demo 🚀")
 
 # mcp.app.add_middleware(
 #     CORSMiddleware,
@@ -52,6 +53,8 @@ mcp = FastMCP("Demo 🚀",middleware=middleware)
 #     allow_methods=["*"],                       # GET, POST, etc.
 #     allow_headers=["*"],                       # Content-Type, Authorization, ...
 # )
+
+mcp.http_app(middleware=starlette_middleware)
 
 @mcp.custom_route("/health", methods=["GET"])
 async def health(request):
