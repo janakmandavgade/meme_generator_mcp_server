@@ -178,5 +178,8 @@ pyrightconfig.json
 client_secret_old.json
 client_secret.json
 
-
+token.json
+updated_cs.json
+test.py
+test_moviepy.py
 # End of https://www.toptal.com/developers/git

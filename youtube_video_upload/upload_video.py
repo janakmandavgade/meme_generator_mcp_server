@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import argparse
 # import httplib
 import http.client as httplib
@@ -15,15 +13,20 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request 
+from dotenv import load_dotenv
 
-ssl._create_default_https_context = ssl._create_unverified_context
+load_dotenv()
 
-# Explicitly tell the underlying HTTP transport library not to retry, since
-# we are handling retry logic ourselves.
-httplib2.RETRIES = 1
+# ssl._create_default_https_context = ssl._create_unverified_context
 
-# Create an httplib2.Http that skips SSL certificate verification
-insecure_http = httplib2.Http(disable_ssl_certificate_validation=True)
+# # Explicitly tell the underlying HTTP transport library not to retry, since
+# # we are handling retry logic ourselves.
+# httplib2.RETRIES = 1
+
+# # Create an httplib2.Http that skips SSL certificate verification
+# insecure_http = httplib2.Http(disable_ssl_certificate_validation=True)
 
 # Maximum number of times to retry before giving up.
 MAX_RETRIES = 10
@@ -48,7 +51,18 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 #   https://developers.google.com/youtube/v3/guides/authentication
 # For more information about the client_secrets.json file format, see:
 #   https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-CLIENT_SECRETS_FILE = '../client_secret.json'
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, '..', 'client_secret.json')
+
+CLIENT_ID = os.environ.get('YOUTUBE_CLIENT_ID')
+PROJECT_ID = os.environ.get('YOUTUBE_PROJECT_ID')
+AUTH_URI = os.environ.get('YOUTUBE_AUTH_URI')
+TOKEN_URI  = os.environ.get('YOUTUBE_TOKEN_URI')
+AUTH_PROVIDER_X509_CERT_URL = os.environ.get('YOUTUBE_AUTH_PROVIDER_X509_CERT_URL')
+CLIENT_SECRET = os.environ.get('YOUTUBE_CLIENT_SECRET')
+REDIRECT_URIS  = ["http://localhost"]
 
 # This OAuth 2.0 access scope allows an application to upload files to the
 # authenticated user's YouTube channel, but doesn't allow other types of access.
@@ -57,13 +71,64 @@ API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
 
 VALID_PRIVACY_STATUSES = ('public', 'private', 'unlisted')
-
+TOKEN_FILE = os.path.join(BASE_DIR, "..","token.json")
 
 # Authorize the request and store authorization credentials.
-def get_authenticated_service():
-  flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-  credentials = flow.run_local_server(port=0)
-  return build(API_SERVICE_NAME, API_VERSION, credentials = credentials, http=insecure_http)
+# def get_authenticated_service():
+#   flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+#   credentials = flow.run_local_server(port=0)
+#   # return build(API_SERVICE_NAME, API_VERSION, credentials = credentials, http=insecure_http)
+#   return build(API_SERVICE_NAME, API_VERSION, credentials = credentials)
+
+# def get_authenticated_service(access_token=None, refresh_token=None):
+#     creds = None
+#     # 1) Load existing credentials if they exist
+#     if os.path.exists(TOKEN_FILE):
+#         creds = Credentials.from_authorized_user_info(str(TOKEN_FILE), SCOPES)
+
+#     # 2) If no valid creds, run the flow once and save them
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(Request())
+#         else:
+#             flow = InstalledAppFlow.from_client_config(
+#                 {
+#                   "installed": {
+#                     "client_id": CLIENT_ID,
+#                     "project_id": PROJECT_ID,
+#                     "auth_uri": AUTH_URI,
+#                     "token_uri": TOKEN_URI,
+#                     "auth_provider_x509_cert_url": AUTH_PROVIDER_X509_CERT_URL,
+#                     "client_secret": CLIENT_SECRET,
+#                     "redirect_uris": REDIRECT_URIS
+#                   }
+#                 }, 
+#                 SCOPES
+#             )
+#             creds = flow.run_local_server(port=0)
+#         # Save the credentials for the next run
+#         with open(TOKEN_FILE, 'w') as token:
+#             token.write(creds.to_json())
+
+#     # 3) Build the YouTube service
+#     return build(API_SERVICE_NAME, API_VERSION, credentials=creds)
+
+def get_authenticated_service(access_token: str, refresh_token: str):
+    creds = Credentials(
+        token=access_token,
+        refresh_token=refresh_token,
+        token_uri=TOKEN_URI,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        scopes=SCOPES
+    )
+
+    # Refresh token if needed
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+
+    # Build the YouTube API service
+    return build("youtube", "v3", credentials=creds)
 
 def initialize_upload(youtube, options):
   tags = None
@@ -166,9 +231,13 @@ def resumable_upload(request):
 
 import argparse
 
-def my_custom_uploader(file_path, title, description, category, keywords, privacy_status):
+def my_custom_uploader(file_path, title, description, category, keywords, privacy_status, access_token, refresh_token ):
+    
     # 1) get an authenticated service
-    youtube = get_authenticated_service()
+    youtube = get_authenticated_service(        
+        access_token=access_token,
+        refresh_token=refresh_token
+    )
 
     # 2) build an argparse.Namespace just like argparse would
     options = argparse.Namespace(
@@ -177,7 +246,7 @@ def my_custom_uploader(file_path, title, description, category, keywords, privac
         description=description,
         category=category,
         keywords=keywords,
-        privacyStatus=privacy_status
+        privacyStatus=privacy_status,
     )
 
     # 3) call the existing function
@@ -185,12 +254,12 @@ def my_custom_uploader(file_path, title, description, category, keywords, privac
 
 
 # example call
-if __name__ == "__main__":
-    my_custom_uploader(
-        file_path="../data/generated_video/out.mp4",
-        title="Test Video",
-        description="Test automated upload",
-        category="23",
-        keywords="meme,funny,dank,geeks,",
-        privacy_status="private"
-    )
+# if __name__ == "__main__":
+#     my_custom_uploader(
+#         file_path="../data/generated_video/out.mp4",
+#         title="Test Video",
+#         description="Test automated upload",
+#         category="23",
+#         keywords="meme,funny,dank,geeks,",
+#         privacy_status="private"
+#     )
