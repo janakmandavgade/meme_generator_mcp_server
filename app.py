@@ -24,8 +24,11 @@ load_dotenv()
 os.environ.setdefault("DANGEROUSLY_OMIT_AUTH", "true")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.environ.get("BASE_DIR")
+os.makedirs(BASE_DIR, exist_ok=True)
 OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", "out.mp4")
+random_meme_path = os.path.join(BASE_DIR,"data","downloaded_memes")
 
 mcp = FastMCP("Demo 🚀")
 
@@ -38,7 +41,7 @@ def add(a: int, b: int) -> dict:
     return result
 
 @mcp.tool
-def download_random_meme(save_dir="./data/downloaded_memes", subreddit=None, max_retries=5):
+def download_random_meme(save_dir=random_meme_path, subreddit=None, max_retries=5):
     """
     Downloads a random meme (or from a specific subreddit) using Meme API,
     but retries if the meme’s base filename already exists or on transient errors.
@@ -138,7 +141,7 @@ def createVideo(meme_image_name=None, audio_type=None, out_name="out.mp4", durat
         dict: Returns if video was created successfully or not with status key.
     """
     try:
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         VIDEO_SIZE = (1080, 1920)
         IMG_WIDTH = 1080
         
@@ -154,15 +157,15 @@ def createVideo(meme_image_name=None, audio_type=None, out_name="out.mp4", durat
         print(meme_image_name)
 
         
-
-        AUDIO_PATH = os.path.join(BASE_DIR, "data", "audio")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        AUDIO_PATH = os.path.join(current_dir, "data", "audio")
         MEME_PATH = os.path.join(BASE_DIR, "data", "downloaded_memes", meme_image_name)
         OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", out_name)
         
         # audio_base_dir = os.path.join(BASE_DIR, "data", "audio")
         if audio_type is None:
             print("No audio type provided, using phonk as default.")
-            if not os.path.exists(os.path.join(BASE_DIR, "data", "audio", "phonk")):
+            if not os.path.exists(os.path.join(current_dir, "data", "audio", "phonk")):
                 raise FileNotFoundError("No phonk dir")
             audio_phonk_path = os.path.join(AUDIO_PATH, "phonk")
             audio_name = os.listdir(audio_phonk_path)[0]  
