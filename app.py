@@ -455,6 +455,8 @@ def upload_video_to_youtube(
         return {"status": True, "message": "Video uploaded successfully.", }
     except Exception as e:
         print(f"Error uploading video: {e}")
+        os.remove(file_path)
+        # os.remove(random_meme_path)
         return {"status": False, "error": str(e)}
 
 if __name__ == "__main__":
