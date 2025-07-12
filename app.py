@@ -32,7 +32,7 @@ OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", "out.mp4")
 random_meme_path = os.path.join(BASE_DIR,"data","downloaded_memes")
 
 mcp = FastMCP("Demo 🚀")
-mcp.add_middleware()
+
 mcp.app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],   # your frontend origin
