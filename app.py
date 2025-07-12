@@ -185,7 +185,7 @@ def createVideo(meme_image_name=None, audio_type=None, out_name="out.mp4", durat
         AUDIO_PATH = os.path.join(current_dir, "data", "audio")
         MEME_PATH = os.path.join(BASE_DIR, "data", "downloaded_memes", meme_image_name)
         OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", out_name)
-        
+        os.makedirs(os.path.join(BASE_DIR, "data", "generated_video"),exist_ok=True)
         # audio_base_dir = os.path.join(BASE_DIR, "data", "audio")
         if audio_type is None:
             print("No audio type provided, using phonk as default.")
@@ -352,7 +352,7 @@ def call_gemini_api() -> dict:
     client = genai.Client(api_key=GEMINI_API_KEY)
 
     # Locate meme
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     meme_base_dir = os.path.join(BASE_DIR, "data", "downloaded_memes")
 
     if not os.path.exists(meme_base_dir):
