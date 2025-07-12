@@ -31,17 +31,25 @@ os.makedirs(BASE_DIR, exist_ok=True)
 OUT_PATH = os.path.join(BASE_DIR, "data", "generated_video", "out.mp4")
 random_meme_path = os.path.join(BASE_DIR,"data","downloaded_memes")
 
-mcp = FastMCP("Demo 🚀")
+mcp = FastMCP("Demo 🚀",middleware=[
+        CORSMiddleware,
+        {
+            "allow_origins": ["*"],
+            "allow_credentials": True,
+            "allow_methods": ["*"],
+            "allow_headers": ["*"],
+        }
+    ])
 
-mcp.app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],   # your frontend origin
-    allow_credentials=True,
-    allow_methods=["*"],                       # GET, POST, etc.
-    allow_headers=["*"],                       # Content-Type, Authorization, ...
-)
+# mcp.app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],   # your frontend origin
+#     allow_credentials=True,
+#     allow_methods=["*"],                       # GET, POST, etc.
+#     allow_headers=["*"],                       # Content-Type, Authorization, ...
+# )
 
-@mcp.get("/health")
+@mcp.custom_route("/health", methods=["GET"])
 async def health():
     print("Healthy MCP server!")
     return {"status": "healthy", "service": "meme_pipeline"}
