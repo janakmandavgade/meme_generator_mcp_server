@@ -1,4 +1,6 @@
 from fastmcp import FastMCP
+import ssl
+import certifi
 import requests
 import os
 import json
@@ -24,6 +26,31 @@ import shutil
 # from fastmcp.server.middleware import Middleware
 
 load_dotenv()
+
+# # Fix SSL certificate issues
+# def fix_ssl_context():
+#     """Fix SSL context issues on Windows"""
+#     try:
+#         # Clear any problematic SSL environment variables
+#         if 'SSL_CERT_FILE' in os.environ:
+#             del os.environ['SSL_CERT_FILE']
+#         if 'SSL_CERT_DIR' in os.environ:
+#             del os.environ['SSL_CERT_DIR']
+        
+#         # Set certifi path explicitly
+#         os.environ['SSL_CERT_FILE'] = certifi.where()
+        
+#         # Create a default SSL context to test
+#         ssl.create_default_context(cafile=certifi.where())
+#         print("SSL context fixed successfully")
+#     except Exception as e:
+#         print(f"SSL fix attempt failed: {e}")
+#         # Fallback: disable SSL verification (not recommended for production)
+#         print("Falling back to unverified SSL context")
+#         ssl._create_default_https_context = ssl._create_unverified_context
+
+# # Apply SSL fix at startup
+# fix_ssl_context()
 # import gradio as gr
 
 THREADS= os.environ.get("THREADS")
